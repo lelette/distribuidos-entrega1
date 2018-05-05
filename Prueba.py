@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #from mpi4py import MPI
 import sys
+import fileinput
 
 size = 3
 rank = 8
@@ -14,6 +15,16 @@ file = open("input.txt", "r")
 lines = file.readlines()
 for i in lines:
    thisline = i.split('"')
-   print thisline
+   print (thisline)
 
+tempFile = open( "input.txt", 'r+' )
+
+for line in fileinput.input( "input.txt" ):
+    if "hardware" in line :
+        print('Match Found')
+    else:
+        print('Match Not Found!!')
+    tempFile.write( line.replace( "hardware", "logro" ) )
+
+tempFile.close()
 
