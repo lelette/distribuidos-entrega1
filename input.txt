@@ -1,2 +1,2 @@
 software"El software es increible!"
-hardware"No like"
+logro"No like"ke"
