@@ -67,8 +67,7 @@ def subWords(bookFile,palabras,searchFile):
 final = countWords("input.txt", "libro.txt")
 palabras = getWordsOrDefinitions("input.txt",0)
 prueba=getDefinitions("input.txt","lelita")
-#subWords("libro.txt",palabras,"input.txt")
+subWords("libro.txt",palabras,"input.txt")
 print("PALABRAS Y REPETICIONES :: %s" % final)
-print(prueba)
 ############################################################################################
 
