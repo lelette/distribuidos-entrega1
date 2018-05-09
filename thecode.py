@@ -69,21 +69,34 @@ def run():
 
 # ################# FIN funciones para manejo de libros #################
 
+def getDefinitions(searchFile,palabra):
+    file = open(searchFile, "r")
+    lines = file.readlines()
+    definition = ""
+    for i in lines:
+       thisline = i.split(' "')
+       if (thisline[0]==palabra):
+           definition = thisline[1]
+    return definition
+
+def subWords(bookFile,palabras,searchFile):
+    for el in palabras:
+        f = open(bookFile,'r')
+        filedata = f.read()
+        f.close()
+        for line in fileinput.FileInput( bookFile ):
+            newdata = filedata.replace(el,getDefinitions(searchFile,el),1)
+            f = open(bookFile,'w')
+            f.write(newdata)
+            f.close()
+            if el in line :
+                break
+    return 0
 
 final = countWords("input.txt", "libro.txt")
+palabras = getWordsOrDefinitions("input.txt",0)
+prueba=getDefinitions("input.txt","lelita")
+subWords("libro.txt",palabras,"input.txt")
 print("PALABRAS Y REPETICIONES :: %s" % final)
-file = open("input.txt","r").readlines()
-print(file)
-
-#tempFile = open( "input.txt", 'r+' )
-
-#for line in fileinput.input( "input.txt" ):
- #   if "hardware" in line :
-  #      print('Match Found')
-   # else:
-    #    print('Match Not Found!!')
-    #tempFile.write( line.replace( "hardware", "logro" ) )
-
-#tempFile.close()
 ############################################################################################
 
