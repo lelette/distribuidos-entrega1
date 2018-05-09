@@ -38,12 +38,42 @@ def getWordsOrDefinitions(searchFile, param):
        thisline = i.split(' "')
        words.append(thisline[param])
     return words
+
+def deleteFile(filename):
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+
+def run():
+    size
+    my_id
+    MPI_Comm_size(comm, size)
+    MPI_Comm_rank(comm, my_id)
+    searchWords = open('input.txt', 'r').readlines()
+
+    MPI.Comm.bcast()
+    if (my_id==0):
+        print("cao")
+        #do coordinator stuff
+    else:
+        print("hola")
+        #do standard-node stuff
+
+    
+
 # ################# FIN funciones para manejo de libros #################
 
 
 final = countWords("input.txt", "libro.txt")
 print("PALABRAS Y REPETICIONES :: %s" % final)
-
+file = open("input.txt","r").readlines()
+print(file)
 
 #tempFile = open( "input.txt", 'r+' )
 
