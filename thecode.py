@@ -69,6 +69,14 @@ def run():
 
 # ################# FIN funciones para manejo de libros #################
 
+
+# ################# funciones para cambio de palabras #################
+
+# funcion: getDefinitions
+# descripcion: retorna las definiciones de una palabra dada en el archivo de busqueda
+# entrada: 
+#   searchFile: str - la ruta y el nombre del archivo de busqueda
+#   palabra: str -  palabra de la cual se busca la definicion
 def getDefinitions(searchFile,palabra):
     file = open(searchFile, "r")
     lines = file.readlines()
@@ -76,9 +84,16 @@ def getDefinitions(searchFile,palabra):
     for i in lines:
        thisline = i.split(' "')
        if (thisline[0]==palabra):
-           definition = thisline[1]
+           thisdef = thisline[1].split('"')
+           definition = thisdef[0]
     return definition
 
+# funcion: subWords
+# descripcion: cambia la primera aparicion de las palabras que se encuentren en la lista de palabras por su respectiva definicion
+# entrada:
+#   bookFile: str - la ruta y el nombre del archivo del libro
+#   searchFile: str - la ruta y el nombre del archivo de busqueda
+#   palabras: list -  lista de palabras que se cambiaran en el libro
 def subWords(bookFile,palabras,searchFile):
     for el in palabras:
         f = open(bookFile,'r')
@@ -93,9 +108,11 @@ def subWords(bookFile,palabras,searchFile):
                 break
     return 0
 
+# ################# FIN funciones para cambio de palabras #################
+
 final = countWords("input.txt", "libro.txt")
 palabras = getWordsOrDefinitions("input.txt",0)
-prueba=getDefinitions("input.txt","lelita")
+prueba=getDefinitions("input.txt","software")
 subWords("libro.txt",palabras,"input.txt")
 print("PALABRAS Y REPETICIONES :: %s" % final)
 ############################################################################################
