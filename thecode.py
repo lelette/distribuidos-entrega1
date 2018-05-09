@@ -108,6 +108,11 @@ def subWords(bookFile,palabras,searchFile):
                 break
     return 0
 
+def ring():
+    #if id=1 cambiar y enviar al siguiente, if id=size-1 recibir cambiar y enviar al coordinador, else recibir cambiar y enviar al siguiente
+    if (my_id)=1:
+        
+
 # ################# FIN funciones para cambio de palabras #################
 
 final = countWords("input.txt", "libro.txt")
