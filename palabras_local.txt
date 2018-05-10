@@ -1,16 +1,30 @@
-desmielinización "
-malabsorción
-intracorpusculares
-hereditaria
-análisis
-Hiperesplenismo
-leucemia
-ﬁbrinólisis
-esplenomegalia
-hipogammaglobulinemia
-Bendamustina
-bifosfonatos
-linfoproliferación
-hematomas
-bazo
-hemoﬁlia
+desmielinización "proceso patológico en el cual se daña la capa de mielina de las fibras nerviosas"
+malabsorción "trastorno de la digestión causado por la dificultad para asimilar, absorber o digerir los nutrientes presentes en los alimentos a lo largo del tracto gastrointestinal"
+intracorpusculares "grupo de trastornos hemolíticos (sea intravascular como extravascular), que causan la disminución de la masa de glóbulos rojos sanguíneos"
+hereditaria "De la herencia o que se transmite a través de ella"
+celíaca "enfermedad sistémica inmunomediada, provocada por el gluten y prolaminas relacionadas"
+Hiperesplenismo "Aumento de células inmaduras en sangre."
+leucemia "Enfermedad de los órganos productores de la sangre que se caracteriza por la proliferación excesiva de leucocitos o glóbulos blancos en la sangre y en la médula ósea"
+ﬁbrinólisis "degradación de las redes de fibrina formadas en el proceso de coagulación sanguínea, evitando la formación de trombos"
+esplenomegalia "agrandamiento patológico del bazo o estructura esplénica más allá de sus dimensiones normales (11 cm)"
+hipogammaglobulinemia "isfunción del sistema inmune en el que se aprecia una concentración baja de todas las inmunoglobulinas (anticuerpos) en sangre lo que provoca inmunodeficiencia"
+Bendamustina "anticancerígeno, una mostaza nitrogenada utilizada en el tratamiento de la leucemia linfática crónica (CLL),​​linfomas y otras neoplasias hematológicas linfoides"
+bifosfonatos "medicamentos utilizados para la prevención y el tratamiento de enfermedades con resorción ósea"
+linfoproliferación "acumulación anormal de linfocitos es apreciable desde temprana edad y las manifestaciones linfoproliferativas suelen aparecer en el primer año"
+hematomas "acumulación de sangre causada por una hemorragia interna"
+bazo "Víscera vascular de muchos vertebrados situada en la región del hipocondrio izquierdo"
+hemoﬁlia "Enfermedad hereditaria que se caracteriza por un defecto de la coagulación de la sangre debido a la falta de uno de los factores que intervienen en ella y que se manifiesta por una persistencia de las hemorragias."
+mielodisplásicos "alteraciones que pueden ocurrir cuando las células productoras de sangre en la médula ósea se convierten en células anormales."
+citopenias "complicación frecuente y potencialmente grave en las Enfermedades Autoinmunes Sistémicas (EASs)"
+citocinas "proteínas que regulan la función de las células que las producen sobre otros tipos celulares"
+trombocitopenia "cualquier situación de disminución de la cantidad de plaquetas circulantes en el torrente sanguíneo por debajo de los niveles normales"
+leucocitos "conjunto heterogéneo de células sanguíneas que son ejecutoras de la respuesta inmunitaria"
+hepatitis "enfermedad inflamatoria que afecta al hígado"
+Cirrosis "Enfermedad crónica e irreversible del hígado que se origina a causa de la destrucción de las células hepáticas y produce un aumento del tejido nodular y fibroso en este órgano"
+hipoxemia "disminución anormal de la presión parcial de oxígeno en la sangre arterial​ por debajo de 80 mmHg."
+metronidazol "medicamento que se emplea en vaginitis causadas por parásitos y en otro tipo de infecciones"
+miotomía "Sección de un músculo, realizada para acceder a los tejidos subyacentes o para aliviar la sintomatología provocada por el exceso de contracción muscular,"
+hematemesis "Vómito de sangre procedente del aparato digestivo."
+epitelio "Tejido constituido por células íntimamente unidas, planas o prismáticas, que recubre la superficie externa del cuerpo y de ciertos órganos interiores."
+difenoxilato "fármaco de la familia de las 4-Fenilpiperidinas y es empleado como antidiarreico asociado a la atropina"
+gliadina "glucoproteína presente en trigo y otros cereales dentro del género Triticum."
