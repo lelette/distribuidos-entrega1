@@ -57,14 +57,24 @@ def deleteFile(filename):
     except OSError:
         pass
 
-def chunks(n, searchFile):
+def evenChunks(searchFile, numnodos):
     chunk = open(searchFile,"r").readlines()
+    n = len(list(chunk)) / numnodos
     for i in range(0, len(chunk), n):
         yield chunk[i:i+n] 
-    #verificar si la cantidad de sublistas (tamano de la lista padre) es mayor al numero de nodos, en ese caso, reasignar la diferencia a las primeras sublistas
     return
 
-#input[i:i+n] for i in range(0, lenchunks (input), n)
+def unevenChunks(chunk, dif):
+    copy = chunk
+    i=0
+    while (i<dif):
+        for elm in chunk[len(chunk)-1 -i]:
+            copy[i].append(elm)
+        copy.remove(chunk[len(chunk)-1 -i])
+        i = i + 1
+    #pprint.pprint(copy)
+    return copy
+
 
 def run():
     size
@@ -73,7 +83,7 @@ def run():
     MPI_Comm_rank(comm, my_id)
     searchWords = open('input.txt', 'r').readlines()
 
-    MPI.Comm.bcast()
+    #MPI.Comm.bcast()
     if (my_id==0):
         print("cao COORDINADOR %d" % my_id)
         #do coordinator stuff
@@ -134,14 +144,17 @@ def subWords(bookFile,palabras,searchFile):
 palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
 subWords("libro.txt",palabras,"input.txt")
-#print("PALABRAS Y REPETICIONES :: %s" % final)
 searchFile = 'input.txt'
 #length/numnodos = chunksize
 numnodos = 7
-chunksize = len(open(searchFile,"r").readlines()) / numnodos
-chunk = list(chunks(chunksize, searchFile))
+chunk = list(evenChunks(searchFile, numnodos))
+dif = len(chunk) - numnodos
+if (dif>0):
+    chunk = unevenChunks(chunk, dif)
+print("CANTIDAD DE PARTES A ENVIAR :: %d" % len(chunk))
+
 #enviar chunk[my_id]
 #final = countWords("libro.txt", chunk[0])
-#print(final)
+#print("PALABRAS Y REPETICIONES :: %s" % final)
 ############################################################################################
 
