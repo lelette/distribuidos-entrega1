@@ -2,6 +2,7 @@
 #from mpi4py import MPI
 import sys
 import fileinput
+import pprint
 ############################################################################################
 
 
@@ -12,17 +13,17 @@ import fileinput
 # entrada: 
 #   searchFile: str - la ruta y el nombre del archivo de busqueda
 #   bookFile: str - la ruta y nombre del libro txt
-def countWords(searchFile, bookFile):
-    words = getWordsOrDefinitions(searchFile, 0)  
+def countWords(bookFile, lista):
+    words = getWords(lista)
     lineas = open(bookFile, "r").readlines()
-    final = ''
+    final = []
     index = 0
     for word in words:
         veces = 0
         for linea in lineas:
             veces = veces + linea.count(word)
         index = index + 1
-        final = final + word + ";" + str(veces) + "|"
+        final.append(word + "|" + str(veces))
     return final
 
 # funcion: getWordsOrDefinitions
@@ -39,16 +40,31 @@ def getWordsOrDefinitions(searchFile, param):
        words.append(thisline[param])
     return words
 
+def getWords(lista):
+    words = []
+    for i in lista:
+       thisline = i.split(' "')
+       words.append(thisline[0])
+    return words
+
 def deleteFile(filename):
     try:
         os.remove(filename)
     except OSError:
         pass
-
     try:
         os.remove(filename)
     except OSError:
         pass
+
+def chunks(n, searchFile):
+    chunk = open(searchFile,"r").readlines()
+    for i in range(0, len(chunk), n):
+        yield chunk[i:i+n] 
+    #verificar si la cantidad de sublistas (tamano de la lista padre) es mayor al numero de nodos, en ese caso, reasignar la diferencia a las primeras sublistas
+    return
+
+#input[i:i+n] for i in range(0, lenchunks (input), n)
 
 def run():
     size
@@ -59,10 +75,10 @@ def run():
 
     MPI.Comm.bcast()
     if (my_id==0):
-        print("cao")
+        print("cao COORDINADOR %d" % my_id)
         #do coordinator stuff
     else:
-        print("hola")
+        print("hola NODO %d" % my_id)
         #do standard-node stuff
 
     
@@ -108,17 +124,24 @@ def subWords(bookFile,palabras,searchFile):
                 break
     return 0
 
-def ring():
+#def ring():
     #if id=1 cambiar y enviar al siguiente, if id=size-1 recibir cambiar y enviar al coordinador, else recibir cambiar y enviar al siguiente
-    if (my_id)=1:
+    #if (my_id)=1:
         
 
 # ################# FIN funciones para cambio de palabras #################
 
-final = countWords("input.txt", "libro.txt")
 palabras = getWordsOrDefinitions("input.txt",0)
-prueba=getDefinitions("input.txt","software")
+#prueba=getDefinitions("input.txt","software")
 subWords("libro.txt",palabras,"input.txt")
-print("PALABRAS Y REPETICIONES :: %s" % final)
+#print("PALABRAS Y REPETICIONES :: %s" % final)
+searchFile = 'input.txt'
+#length/numnodos = chunksize
+numnodos = 7
+chunksize = len(open(searchFile,"r").readlines()) / numnodos
+chunk = list(chunks(chunksize, searchFile))
+#enviar chunk[my_id]
+#final = countWords("libro.txt", chunk[0])
+#print(final)
 ############################################################################################
 
