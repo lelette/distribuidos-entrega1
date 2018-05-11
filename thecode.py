@@ -60,8 +60,8 @@ def deleteFile(filename):
 def evenChunks(searchFile, numnodos):
     chunk = open(searchFile,"r").readlines()
     n = len(list(chunk)) / numnodos
-    for i in range(0, len(chunk), n):
-        yield chunk[i:i+n] 
+    for i in range(0, len(chunk), int(n)):
+        yield chunk[int(i):int(i+n)] 
     return
 
 def unevenChunks(chunk, dif):
@@ -103,11 +103,9 @@ def run():
 # entrada: 
 #   searchFile: str - la ruta y el nombre del archivo de busqueda
 #   palabra: str -  palabra de la cual se busca la definicion
-def getDefinitions(searchFile,palabra):
-    file = open(searchFile, "r")
-    lines = file.readlines()
+def getDefinitions(lista,palabra):
     definition = ""
-    for i in lines:
+    for i in lista:
        thisline = i.split(' "')
        if (thisline[0]==palabra):
            thisdef = thisline[1].split('"')
@@ -120,30 +118,60 @@ def getDefinitions(searchFile,palabra):
 #   bookFile: str - la ruta y el nombre del archivo del libro
 #   searchFile: str - la ruta y el nombre del archivo de busqueda
 #   palabras: list -  lista de palabras que se cambiaran en el libro
-def subWords(bookFile,palabras,searchFile):
-    for el in palabras:
-        f = open(bookFile,'r')
+def subWords(bookFile,lista):
+    for el in lista:
+        f = open("libro.txt",'r')
         filedata = f.read()
         f.close()
+        word=el.split(' "')
+        definition=word[1].split('"')
         for line in fileinput.FileInput( bookFile ):
-            newdata = filedata.replace(el,getDefinitions(searchFile,el),1)
+            newdata = filedata.replace(word[0],definition[0],1)
             f = open(bookFile,'w')
             f.write(newdata)
             f.close()
             if el in line :
                 break
-    return 0
+    return newdata
 
-#def ring():
-    #if id=1 cambiar y enviar al siguiente, if id=size-1 recibir cambiar y enviar al coordinador, else recibir cambiar y enviar al siguiente
-    #if (my_id)=1:
-        
+def ring(bookFile, lista):
+     #   if id=1 cambiar y enviar al siguiente, if id=size-1 recibir cambiar y enviar al coordinador, else recibir cambiar y enviar al siguiente
+    if (my_id)==0:
+    #   MPI_Recv(data,data.length,)
+        f = open(bookFile,'w')
+        f.write(data)
+        f.close()
+    if (my_id)==1:
+        subWords(bookFile,lista)
+        f = open(bookFile,'r')
+        filedata = f.read()
+        f.close()
+        MPI_Send(filedata, filedata.length, MPI_CHAR, (my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
+    if (my_id)==size-1:
+    #   MPI_Recv(data,data.length,)
+        f = open(bookFile,'w')
+        f.write(data)
+        f.close()
+        subWords(bookFile,lista)
+        f = open(bookFile,'r')
+        filedata = f.read()
+        f.close()
+        MPI_Send(filedata, filedata.length, MPI_CHAR,0, MPI_ANY_TAG, MPI_COMM_WORLD)
+    else:
+        #   MPI_Recv(data,data.length,)
+        f = open(bookFile,'w')
+        f.write(data)
+        f.close()
+        subWords(bookFile,lista)
+        f = open(bookFile,'r')
+        filedata = f.read()
+        f.close()
+        MPI_Send(filedata, filedata.length, MPI_CHAR,(my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
 
 # ################# FIN funciones para cambio de palabras #################
 
 palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
-subWords("libro.txt",palabras,"input.txt")
 searchFile = 'input.txt'
 #length/numnodos = chunksize
 numnodos = 7
@@ -152,7 +180,8 @@ dif = len(chunk) - numnodos
 if (dif>0):
     chunk = unevenChunks(chunk, dif)
 print("CANTIDAD DE PARTES A ENVIAR :: %d" % len(chunk))
-
+print(chunk[0])
+subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
 #final = countWords("libro.txt", chunk[0])
 #print("PALABRAS Y REPETICIONES :: %s" % final)
