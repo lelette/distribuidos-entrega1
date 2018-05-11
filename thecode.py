@@ -106,12 +106,13 @@ def read(bookFile):
     f = open(bookFile,'r')
     filedata = f.read()
     f.close()
+    return filedata
 
 # funcion: write
 # descripcion: escribe en un archivo
 # entrada:
 #   bookFile: str - la ruta y el nombre del archivo del libro
-def write(bookFile):
+def write(bookFile,data):
     f = open(bookFile,'w')
     f.write(data)
     f.close()
@@ -138,15 +139,15 @@ def getDefinitions(lista,palabra):
 #   palabras: list -  lista de palabras que se cambiaran en el libro
 def subWords(bookFile,lista):
     for el in lista:
-        read(bookFile)
+        filedata=read(bookFile)
         word=el.split(' "')
         definition=word[1].split('"')
         for line in fileinput.FileInput( bookFile ):
             newdata = filedata.replace(word[0],definition[0],1)
-            write(bookFile)
+            write(bookFile,newdata)
             if el in line :
                 break
-    return newdata
+    return 0
 
 # funcion: ring
 # descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
@@ -157,25 +158,25 @@ def ring(bookFile, lista):
     #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
     #   MPI_Recv(data,data.length,)
-        write(bookFile)
+        write(bookFile,data)
     #primer nodo solo modifica y envia al siguiente
     if (my_id)==1:
         subWords(bookFile,lista)
-        read(bookFile)
+        filedata=read(bookFile)
         MPI_Send(filedata, filedata.length, MPI_CHAR, (my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
     #ultimo nodo recibe, modifica y envia al coordinador
     if (my_id)==size-1:
     #   MPI_Recv(data,data.length,)
-        write(bookFile)
+        write(bookFile,data)
         subWords(bookFile,lista)
-        read(bookFile)
+        filedata=read(bookFile)
         MPI_Send(filedata, filedata.length, MPI_CHAR,0, MPI_ANY_TAG, MPI_COMM_WORLD)
     #los demas nodos reciben, modifican y envian al siguiente
     else:
     #   MPI_Recv(data,data.length,)
-        write(bookFile)
+        write(bookFile,data)
         subWords(bookFile,lista)
-        read(bookFile)
+        filedata=read(bookFile)
         MPI_Send(filedata, filedata.length, MPI_CHAR,(my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
 
 # ################# FIN funciones para cambio de palabras #################
