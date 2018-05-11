@@ -135,18 +135,20 @@ def subWords(bookFile,lista):
     return newdata
 
 def ring(bookFile, lista):
-     #   if id=1 cambiar y enviar al siguiente, if id=size-1 recibir cambiar y enviar al coordinador, else recibir cambiar y enviar al siguiente
+    #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
     #   MPI_Recv(data,data.length,)
         f = open(bookFile,'w')
         f.write(data)
         f.close()
+    #primer nodo solo modifica y envia al siguiente
     if (my_id)==1:
         subWords(bookFile,lista)
         f = open(bookFile,'r')
         filedata = f.read()
         f.close()
         MPI_Send(filedata, filedata.length, MPI_CHAR, (my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
+    #ultimo nodo recibe, modifica y envia al coordinador
     if (my_id)==size-1:
     #   MPI_Recv(data,data.length,)
         f = open(bookFile,'w')
@@ -157,8 +159,9 @@ def ring(bookFile, lista):
         filedata = f.read()
         f.close()
         MPI_Send(filedata, filedata.length, MPI_CHAR,0, MPI_ANY_TAG, MPI_COMM_WORLD)
+    #los demas nodos reciben, modifican y envian al siguiente
     else:
-        #   MPI_Recv(data,data.length,)
+    #   MPI_Recv(data,data.length,)
         f = open(bookFile,'w')
         f.write(data)
         f.close()
