@@ -154,12 +154,21 @@ def subWords(bookFile,lista):
                 break
     return 0
 
+<<<<<<< HEAD
 """ funcion: ring
  descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro
    lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro """
 def ring(bookFile, lista):
+=======
+# funcion: ring
+# descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
+# entrada:
+#   bookFile: str - la ruta y el nombre del archivo del libro
+#   lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro
+def ring(my_id,bookFile, lista):
+>>>>>>> 630cccecb9996d3b3641491325e8743cc5d91fbf
     #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
     #   MPI_Recv(data,data.length,)
