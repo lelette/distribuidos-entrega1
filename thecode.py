@@ -3,16 +3,13 @@
 import sys
 import fileinput
 import pprint
-############################################################################################
-
-
 # ################# funciones para manejo de libros ####################
 
-# funcion: contarPalabras 
-# descripcion: dadas las palabras en el chunk correspondiente, las parsea y cuenta para escribir en un archivo de salida
-# entrada: 
-#   searchFile: str - la ruta y el nombre del archivo de busqueda
-#   bookFile: str - la ruta y nombre del libro txt
+""" funcion: countWords 
+    descripcion: dadas las palabras en el chunk correspondiente, las parsea y cuenta para escribir en un archivo de salida
+    entrada: 
+    searchFile: str - la ruta y el nombre del archivo de busqueda
+    bookFile: str - la ruta y nombre del libro txt """
 def countWords(bookFile, lista):
     words = getWords(lista)
     lineas = open(bookFile, "r").readlines()
@@ -26,11 +23,11 @@ def countWords(bookFile, lista):
         final.append(word + "|" + str(veces))
     return final
 
-# funcion: getWordsOrDefinitions
-# descripcion: retorna en una lista las palabras o las definiciones dadas en el archivo de busqueda
-# entrada: 
-#   searchFile: str - la ruta y el nombre del archivo de busqueda
-#   param: int - 0 para obtener las palabras y 1 para obtener las definiciones
+""" funcion: getWordsOrDefinitions
+    descripcion: retorna en una lista las palabras o las definiciones dadas en el archivo de busqueda
+    entrada: 
+    searchFile: str - la ruta y el nombre del archivo de busqueda
+    param: int - 0 para obtener las palabras y 1 para obtener las definiciones """
 def getWordsOrDefinitions(searchFile, param):
     file = open(searchFile, "r")
     lines = file.readlines()
@@ -75,22 +72,30 @@ def unevenChunks(chunk, dif):
     #pprint.pprint(copy)
     return copy
 
-
-def run():
-    size
-    my_id
-    MPI_Comm_size(comm, size)
-    MPI_Comm_rank(comm, my_id)
-    searchWords = open('input.txt', 'r').readlines()
-
-    #MPI.Comm.bcast()
+def run(searchFile):
+    comm = MPI.COMM_WORLD
+    numnodos = comm.Get_size()
+    my_id = comm.Get_rank()
+    name = MPI.Get_processor_name()
+    chunk = open(searchFile,"r").readlines()
+    chunksize = (len(list(chunk)) / (numnodos-1))    
+    parts = getChunks(searchFile, numnodos-1)
     if (my_id==0):
-        print("cao COORDINADOR %d" % my_id)
-        #do coordinator stuff
+        i = 0
+        while (i < (numnodos - 1)):
+            position= i + 1
+            comm.send(parts[position], dest = position, tag = 11)
+	    i = i+1
     else:
-        print("hola NODO %d" % my_id)
-        #do standard-node stuff
+        parts = comm.recv(source = 0, tag =11)
+ 	#print("after receiving %s" % parts)
 
+def getChunks(searchFile, numnodos):
+    chunk = list(evenChunks(searchFile, numnodos))
+    dif = len(chunk) - numnodos
+    if (dif>0):
+        chunk = unevenChunks(chunk, dif)
+    return chunk
     
 
 # ################# FIN funciones para manejo de libros #################
@@ -98,30 +103,30 @@ def run():
 
 # ################# funciones para cambio de palabras #################
 
-# funcion: read
-# descripcion: lee un archivo
-# entrada:
-#   bookFile: str - la ruta y el nombre del archivo del libro
+""" funcion: read
+ descripcion: lee un archivo
+ entrada:
+   bookFile: str - la ruta y el nombre del archivo del libro """
 def read(bookFile):
     f = open(bookFile,'r')
     filedata = f.read()
     f.close()
     return filedata
 
-# funcion: write
-# descripcion: escribe en un archivo
-# entrada:
-#   bookFile: str - la ruta y el nombre del archivo del libro
+""" funcion: write
+ descripcion: escribe en un archivo
+ entrada:
+   bookFile: str - la ruta y el nombre del archivo del libro """
 def write(bookFile,data):
     f = open(bookFile,'w')
     f.write(data)
     f.close()
 
-# funcion: getDefinitions
-# descripcion: retorna las definiciones de una palabra dada en el archivo de busqueda
-# entrada: 
-#   searchFile: str - la ruta y el nombre del archivo de busqueda
-#   palabra: str -  palabra de la cual se busca la definicion
+""" funcion: getDefinitions
+ descripcion: retorna las definiciones de una palabra dada en el archivo de busqueda
+ entrada: 
+   searchFile: str - la ruta y el nombre del archivo de busqueda
+   palabra: str -  palabra de la cual se busca la definicion """
 def getDefinitions(lista,palabra):
     definition = ""
     for i in lista:
@@ -131,12 +136,12 @@ def getDefinitions(lista,palabra):
            definition = thisdef[0]
     return definition
 
-# funcion: subWords
-# descripcion: cambia la primera aparicion de las palabras que se encuentren en la lista de palabras por su respectiva definicion
-# entrada:
-#   bookFile: str - la ruta y el nombre del archivo del libro
-#   searchFile: str - la ruta y el nombre del archivo de busqueda
-#   palabras: list -  lista de palabras que se cambiaran en el libro
+""" funcion: subWords
+ descripcion: cambia la primera aparicion de las palabras que se encuentren en la lista de palabras por su respectiva definicion
+ entrada:
+   bookFile: str - la ruta y el nombre del archivo del libro
+   searchFile: str - la ruta y el nombre del archivo de busqueda
+   palabras: list -  lista de palabras que se cambiaran en el libro """
 def subWords(bookFile,lista):
     for el in lista:
         filedata=read(bookFile)
@@ -149,11 +154,11 @@ def subWords(bookFile,lista):
                 break
     return 0
 
-# funcion: ring
-# descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
-# entrada:
-#   bookFile: str - la ruta y el nombre del archivo del libro
-#   lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro
+""" funcion: ring
+ descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
+ entrada:
+   bookFile: str - la ruta y el nombre del archivo del libro
+   lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro """
 def ring(bookFile, lista):
     #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
@@ -181,20 +186,18 @@ def ring(bookFile, lista):
 
 # ################# FIN funciones para cambio de palabras #################
 
+
+
+############### MAIN CODE ################
 palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
 searchFile = 'input.txt'
 #length/numnodos = chunksize
-numnodos = 7
-chunk = list(evenChunks(searchFile, numnodos))
-dif = len(chunk) - numnodos
-if (dif>0):
-    chunk = unevenChunks(chunk, dif)
-print("CANTIDAD DE PARTES A ENVIAR :: %d" % len(chunk))
-print(chunk[0])
-subWords("libro.txt",chunk[0])
+numnodos = 8
+run(searchFile)
+#print(chunk[0])
+#subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
 #final = countWords("libro.txt", chunk[0])
 #print("PALABRAS Y REPETICIONES :: %s" % final)
-############################################################################################
 
