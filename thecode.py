@@ -154,7 +154,7 @@ def subWords(bookFile,lista):
 # entrada:
 #   bookFile: str - la ruta y el nombre del archivo del libro
 #   lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro
-def ring(bookFile, lista):
+def ring(my_id,bookFile, lista):
     #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
     #   MPI_Recv(data,data.length,)
