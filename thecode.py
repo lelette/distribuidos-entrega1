@@ -131,6 +131,26 @@ def write(bookFile,data):
     f.write(data)
     f.close()
 
+""" funcion: readList
+ descripcion: lee en un archivo y lo coloca en lista por linea
+ entrada:
+   bookFile: str - la ruta y el nombre del archivo del libro """
+def readList(bookFile):
+    f=open(bookFile,'r')
+    filedata=f.readlines()
+    f.close()
+    return filedata
+
+""" funcion: writeList
+ descripcion: escribe una lista en un archivo
+ entrada:
+   bookFile: str - la ruta y el nombre del archivo del libro """
+def writeList(bookFile,lista):
+    f= open(bookFile,'w')
+    for item in lista:
+        f.write(item)
+    f.close()
+    
 """ funcion: getDefinitions
  descripcion: retorna las definiciones de una palabra dada en el archivo de busqueda
  entrada: 
@@ -168,30 +188,30 @@ def subWords(bookFile,lista):
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro
    lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro """
-def ring(bookFile, lista):
+def ring(my_id,bookFile, lista,comm,size):
     #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
-    #   MPI_Recv(data,data.length,)
-        write(bookFile,data)
+        data = comm.recv(source = (size-1), tag =12)
+        writeList(bookFile,data)
     #primer nodo solo modifica y envia al siguiente
     if (my_id)==1:
         subWords(bookFile,lista)
-        filedata=read(bookFile)
-        MPI_Send(filedata, filedata.length, MPI_CHAR, (my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
+        filedata=readList(bookFile)
+        comm.send(filedata, dest = ((my_id)+1), tag = 12)
     #ultimo nodo recibe, modifica y envia al coordinador
     if (my_id)==size-1:
-    #   MPI_Recv(data,data.length,)
-        write(bookFile,data)
+        data = comm.recv(source =((my_id)-1) , tag =12)
+        writeList(bookFile,data)
         subWords(bookFile,lista)
-        filedata=read(bookFile)
-        MPI_Send(filedata, filedata.length, MPI_CHAR,0, MPI_ANY_TAG, MPI_COMM_WORLD)
+        filedata=readList(bookFile)
+        comm.send(filedata, dest = 0, tag = 12)
     #los demas nodos reciben, modifican y envian al siguiente
     else:
-    #   MPI_Recv(data,data.length,)
-        write(bookFile,data)
+        data = comm.recv(source =((my_id)-1) , tag =12)
+        writeList(bookFile,data)
         subWords(bookFile,lista)
-        filedata=read(bookFile)
-        MPI_Send(filedata, filedata.length, MPI_CHAR,(my_id+1), MPI_ANY_TAG, MPI_COMM_WORLD)
+        filedata=readList(bookFile)
+        comm.send(filedata, dest = ((my_id)+1), tag = 12)
 
 # ################# FIN funciones para cambio de palabras #################
 
@@ -206,6 +226,10 @@ run(searchFile, book)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
+#chunk=getChunks(searchFile,7)
+#subWords("libro.txt",chunk[0])
+filedata=readList("libro.txt")
+writeList("prueba.txt",filedata)
 #final = countWords("libro.txt", chunk[0])
 #print("PALABRAS Y REPETICIONES :: %s" % final)
 
