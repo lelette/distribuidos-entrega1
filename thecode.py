@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#from mpi4py import MPI
+from mpi4py import MPI
 import sys
 import fileinput
 import pprint
@@ -69,26 +69,35 @@ def unevenChunks(chunk, dif):
             copy[i].append(elm)
         copy.remove(chunk[len(chunk)-1 -i])
         i = i + 1
-    #pprint.pprint(copy)
     return copy
 
-def run(searchFile):
+def run(searchFile, book):
     comm = MPI.COMM_WORLD
     numnodos = comm.Get_size()
     my_id = comm.Get_rank()
     name = MPI.Get_processor_name()
-    chunk = open(searchFile,"r").readlines()
-    chunksize = (len(list(chunk)) / (numnodos-1))    
-    parts = getChunks(searchFile, numnodos-1)
+    final = []
     if (my_id==0):
+        chunk = open(searchFile,"r").readlines() 
+        parts = getChunks(searchFile, numnodos-1)
         i = 0
         while (i < (numnodos - 1)):
-            position= i + 1
-            comm.send(parts[position], dest = position, tag = 11)
-	    i = i+1
+            comm.send(parts[i], dest = i+1, tag = 11)
+ 	    i = i+1
+        #recibe la cantidad de palabras, ordenarlas y escribir en el archivo
+        i=1
+        while (i<= (numnodos-1)):
+            numwords = comm.recv(source=i, tag =13)
+	    for word in numwords:
+	        final.append(word)
+            i = i+1
+	    final.sort()
+    	pprint.pprint(final)
     else:
         parts = comm.recv(source = 0, tag =11)
- 	#print("after receiving %s" % parts)
+        words = countWords(book, parts)
+        comm.send(words, dest = 0, tag =13) 
+#parts = MPI.COMM_WORLD.recv(numnodos-1,tag)
 
 def getChunks(searchFile, numnodos):
     chunk = list(evenChunks(searchFile, numnodos))
@@ -154,21 +163,12 @@ def subWords(bookFile,lista):
                 break
     return 0
 
-<<<<<<< HEAD
 """ funcion: ring
  descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro
    lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro """
 def ring(bookFile, lista):
-=======
-# funcion: ring
-# descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
-# entrada:
-#   bookFile: str - la ruta y el nombre del archivo del libro
-#   lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro
-def ring(my_id,bookFile, lista):
->>>>>>> 630cccecb9996d3b3641491325e8743cc5d91fbf
     #coordinador solo recibe y escribe en el archivo
     if (my_id)==0:
     #   MPI_Recv(data,data.length,)
@@ -201,9 +201,8 @@ def ring(my_id,bookFile, lista):
 palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
 searchFile = 'input.txt'
-#length/numnodos = chunksize
-numnodos = 8
-run(searchFile)
+book = 'libro.txt'
+run(searchFile, book)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
