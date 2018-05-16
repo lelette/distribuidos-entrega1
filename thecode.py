@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#from mpi4py import MPI
+from mpi4py import MPI
 import sys
 import fileinput
 import pprint
@@ -213,15 +213,15 @@ palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
 searchFile = 'input.txt'
 #length/numnodos = chunksize
-numnodos = 8
+#numnodos = 8
 run(searchFile)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
 #chunk=getChunks(searchFile,7)
 #subWords("libro.txt",chunk[0])
-filedata=readList("libro.txt")
-writeList("prueba.txt",filedata)
+#filedata=readList("libro.txt")
+#writeList("prueba.txt",filedata)
 #final = countWords("libro.txt", chunk[0])
 #print("PALABRAS Y REPETICIONES :: %s" % final)
 
