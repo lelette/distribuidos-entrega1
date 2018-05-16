@@ -93,10 +93,12 @@ def run(searchFile, book):
             i = i+1
 	    final.sort()
     	pprint.pprint(final)
+        ring(my_id,book,parts,comm,numnodos)
     else:
         parts = comm.recv(source = 0, tag =11)
         words = countWords(book, parts)
         comm.send(words, dest = 0, tag =13) 
+        ring(my_id,book,parts,comm,numnodos)
 #parts = MPI.COMM_WORLD.recv(numnodos-1,tag)
 
 def getChunks(searchFile, numnodos):
@@ -193,18 +195,21 @@ def ring(my_id,bookFile, lista,comm,size):
     if (my_id)==0:
         data = comm.recv(source = (size-1), tag =12)
         writeList(bookFile,data)
+        print("coordinador recibio libro")
     #primer nodo solo modifica y envia al siguiente
-    if (my_id)==1:
+    elif (my_id)==1:
         subWords(bookFile,lista)
         filedata=readList(bookFile)
         comm.send(filedata, dest = ((my_id)+1), tag = 12)
+        print("Nodo %s realizo su modificacion" % my_id)
     #ultimo nodo recibe, modifica y envia al coordinador
-    if (my_id)==size-1:
+    elif (my_id)==size-1:
         data = comm.recv(source =((my_id)-1) , tag =12)
         writeList(bookFile,data)
         subWords(bookFile,lista)
         filedata=readList(bookFile)
         comm.send(filedata, dest = 0, tag = 12)
+        print("Nodo %s realizo su modificacion" % my_id)
     #los demas nodos reciben, modifican y envian al siguiente
     else:
         data = comm.recv(source =((my_id)-1) , tag =12)
@@ -212,6 +217,7 @@ def ring(my_id,bookFile, lista,comm,size):
         subWords(bookFile,lista)
         filedata=readList(bookFile)
         comm.send(filedata, dest = ((my_id)+1), tag = 12)
+        print("Nodo %s realizo su modificacion" % my_id)
 
 # ################# FIN funciones para cambio de palabras #################
 
