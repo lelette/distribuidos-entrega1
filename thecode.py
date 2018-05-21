@@ -71,7 +71,7 @@ def unevenChunks(chunk, dif):
         i = i + 1
     return copy
 
-def run(searchFile, book):
+def run(searchFile, book, book2):
     comm = MPI.COMM_WORLD
     numnodos = comm.Get_size()
     my_id = comm.Get_rank()
@@ -93,12 +93,12 @@ def run(searchFile, book):
             i = i+1
 	    final.sort()
     	pprint.pprint(final)
-        ring(my_id,book,parts,comm,numnodos)
+        ring(my_id,book2,parts,comm,numnodos)
     else:
         parts = comm.recv(source = 0, tag =11)
         words = countWords(book, parts)
         comm.send(words, dest = 0, tag =13) 
-        ring(my_id,book,parts,comm,numnodos)
+        ring(my_id,book2,parts,comm,numnodos)
 #parts = MPI.COMM_WORLD.recv(numnodos-1,tag)
 
 def getChunks(searchFile, numnodos):
@@ -228,7 +228,8 @@ palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
 searchFile = 'input.txt'
 book = '/local_home/mnarguelles.14/libro.txt'
-run(searchFile, book)
+book2 = 'libro2.txt'
+run(searchFile, book, book2)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
