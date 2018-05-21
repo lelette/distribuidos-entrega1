@@ -78,7 +78,7 @@ def run(searchFile, book, book2):
     name = MPI.Get_processor_name()
     final = []
     filedata=read(book)
-    write(book2,filedata)
+    createFile(book2,filedata)
     if (my_id==0):
         chunk = open(searchFile,"r").readlines() 
         parts = getChunks(searchFile, numnodos-1)
@@ -153,6 +153,16 @@ def writeList(bookFile,lista):
     f= open(bookFile,'w')
     for item in lista:
         f.write(item)
+    f.close()
+
+""" funcion: createFile
+ descripcion: crea un archivo y le agrega el contenido
+ entrada:
+   bookName: str - la ruta y el nombre del archivo a crear 
+   content: str - contenido a agregar """
+def createFile(bookName,content)
+    f=open(bookName,'w+')
+    f.write(content)
     f.close()
     
 """ funcion: getDefinitions
