@@ -227,7 +227,7 @@ def ring(my_id,bookFile, lista,comm,size):
 palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
 searchFile = 'input.txt'
-book = 'libro.txt'
+book = '/local_home/mnarguelles.14/libro.txt'
 run(searchFile, book)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
