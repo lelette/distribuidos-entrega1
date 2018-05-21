@@ -77,8 +77,6 @@ def run(searchFile, book, book2):
     my_id = comm.Get_rank()
     name = MPI.Get_processor_name()
     final = []
-    filedata=read(book)
-    write(book2,filedata)
     if (my_id==0):
         chunk = open(searchFile,"r").readlines() 
         parts = getChunks(searchFile, numnodos-1)
@@ -95,6 +93,8 @@ def run(searchFile, book, book2):
             i = i+1
 	    final.sort()
     	pprint.pprint(final)
+        filedata=read(book)
+        write(book2,filedata)
         ring(my_id,book2,parts,comm,numnodos)
     else:
         parts = comm.recv(source = 0, tag =11)
