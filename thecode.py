@@ -136,7 +136,7 @@ def write(bookFile,data):
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro """
 def readList(bookFile):
-     with open(bookFile) as f:
+    with open(bookFile) as f:
         filedata = f.readlines()
         f.close()
     return filedata
