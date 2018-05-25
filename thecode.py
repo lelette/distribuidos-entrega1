@@ -129,7 +129,7 @@ def read(bookFile):
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro """
 def write(bookFile,data):
-    f = open(bookFile,'w')
+    f = open(bookFile,'w+')
     f.write(data)
     f.close()
 
