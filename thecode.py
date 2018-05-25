@@ -67,9 +67,9 @@ def run(searchFile, book, book2):
     my_id = comm.Get_rank()
     name = MPI.Get_processor_name()
     final = []
-    #filedata = read(book)
-    #write(book2, filedata)
     if (my_id==0):
+        filedata=read(book)
+        write(book2,filedata)  
         chunk = open(searchFile,"r").readlines() 
         parts = getChunks(searchFile, numnodos-1)
         i = 0
@@ -89,9 +89,7 @@ def run(searchFile, book, book2):
         print("CANTIDAD DE PALABRAS CONTADAS:: %d" % len(final))
         while (i<(len(final)-1)):
             print(final[i].decode('utf-8'))
-            i = i+1
-        filedata=read(book)
-        write(book2,filedata)        
+            i = i+1      
         ring(my_id,book2,parts,comm,numnodos)
     else:
         parts = comm.recv(source = 0, tag =11)
@@ -119,9 +117,9 @@ def getChunks(searchFile, numnodos):
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro """
 def read(bookFile):
-    f = open(bookFile,'r')
-    filedata = f.read()
-    f.close()
+    with open(bookFile) as f:
+        filedata = f.read()
+        f.close()
     return filedata
 
 """ funcion: write
@@ -129,18 +127,18 @@ def read(bookFile):
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro """
 def write(bookFile,data):
-    f = open(bookFile,'w+')
-    f.write(data)
-    f.close()
+    with open(bookFile,'w+') as f:
+        f.write(data)
+        f.close()
 
 """ funcion: readList
  descripcion: lee en un archivo y lo coloca en lista por linea
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro """
 def readList(bookFile):
-    f=open(bookFile,'r')
-    filedata=f.readlines()
-    f.close()
+     with open(bookFile) as f:
+        filedata = f.readlines()
+        f.close()
     return filedata
 
 """ funcion: writeList
@@ -148,9 +146,9 @@ def readList(bookFile):
  entrada:
    bookFile: str - la ruta y el nombre del archivo del libro """
 def writeList(bookFile,lista):
-    f= open(bookFile,'w')
-    for item in lista:
-        f.write(item)
+    with open(bookFile,'w+') as f:
+        for item in lista:
+            f.write(item)
     f.close()
     
 """ funcion: getDefinitions
@@ -173,19 +171,15 @@ def getDefinitions(lista,palabra):
    bookFile: str - la ruta y el nombre del archivo del libro
    searchFile: str - la ruta y el nombre del archivo de busqueda
    palabras: list -  lista de palabras que se cambiaran en el libro """
-def subWords(bookFile,lista):
+def subWords(bookFile,lista,libro):
     for el in lista:
-        filedata=read(bookFile)
         word=el.split(' "')
-        #print("worddddd :: %s" % word)
         definition=word[1].split('"')
-        #print("definition :: %s" % definition)
-        for line in fileinput.FileInput( bookFile ):
-            newdata = filedata.replace(word[0],definition[0],1)
-            write(bookFile,newdata)
-            if el in line :
+        for i in range(len(libro)):
+            if (" "+word[0].lower()+" ") in libro[i].lower():
+                libro[i] = libro[i].lower().replace(word[0].lower(),definition[0],1)
                 break
-    return 0
+    return libro
 
 """ funcion: ring
  descripcion: realiza el recorrido en anillo para cambiar las palabras del libro en cada nodo
@@ -201,26 +195,22 @@ def ring(my_id,bookFile, lista,comm,size):
         print("** Coordinador recibio libro con modificaciones **")
     #primer nodo solo modifica y envia al siguiente
     elif (my_id)==1:
-        subWords(bookFile,lista)
-        filedata=readList(bookFile)
+        libro=readList(bookFile)
+        filedata=subWords(bookFile,lista,libro)
         comm.send(filedata, dest = ((my_id)+1), tag = 12)
         print("Nodo %s realizo su modificacion" % my_id)
     #ultimo nodo recibe, modifica y envia al coordinador
     elif (my_id)==size-1:
-        data = comm.recv(source =((my_id)-1) , tag =12)
-        writeList(bookFile,data)
-        subWords(bookFile,lista)
-        filedata=readList(bookFile)
+        libro = comm.recv(source =((my_id)-1) , tag =12)
+        filedata=subWords(bookFile,lista,libro)
         comm.send(filedata, dest = 0, tag = 12)
         print("Nodo %s realizo su modificacion" % my_id)
     #los demas nodos reciben, modifican y envian al siguiente
     else:
-        data = comm.recv(source =((my_id)-1) , tag =12)
-        writeList(bookFile,data)
-        subWords(bookFile,lista)
-        filedata=readList(bookFile)
+        libro = comm.recv(source =((my_id)-1) , tag =12)
+        filedata=subWords(bookFile,lista)
         comm.send(filedata, dest = ((my_id)+1), tag = 12)
-        print("NODOOOOOOO %s realizo su modificacion" % my_id)
+        print("Nodo %s realizo su modificacion" % my_id)
 
 # ################# FIN funciones para cambio de palabras #################
 
@@ -231,9 +221,10 @@ def ring(my_id,bookFile, lista,comm,size):
 #prueba=getDefinitions("input.txt","software")
 searchFile = 'palabras_libro_medicina.txt'
 book = 'libro.txt'
+bookm='libro_medicina.txt'
 local_book = '/local_home/mnarguelles.14/libro.txt'
 book2 = 'libro2.txt'
-run(searchFile, local_book, book2)
+run(searchFile, bookm, book2)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
