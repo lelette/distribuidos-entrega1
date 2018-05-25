@@ -44,16 +44,6 @@ def getWords(lista):
        words.append(thisline[0])
     return words
 
-def deleteFile(filename):
-    try:
-        os.remove(filename)
-    except OSError:
-        pass
-    try:
-        os.remove(filename)
-    except OSError:
-        pass
-
 def evenChunks(searchFile, numnodos):
     chunk = open(searchFile,"r").readlines()
     n = len(list(chunk)) / numnodos
@@ -71,12 +61,14 @@ def unevenChunks(chunk, dif):
         i = i + 1
     return copy
 
-def run(searchFile, book):
+def run(searchFile, book, book2):
     comm = MPI.COMM_WORLD
     numnodos = comm.Get_size()
     my_id = comm.Get_rank()
     name = MPI.Get_processor_name()
     final = []
+    #filedata = read(book)
+    #write(book2, filedata)
     if (my_id==0):
         chunk = open(searchFile,"r").readlines() 
         parts = getChunks(searchFile, numnodos-1)
@@ -92,13 +84,21 @@ def run(searchFile, book):
 	        final.append(word)
             i = i+1
 	    final.sort()
-    	pprint.pprint(final)
-        ring(my_id,book,parts,comm,numnodos)
+#    	pprint.pprint(final.encode('utf-8'))
+	i = 0
+        print("CANTIDAD DE PALABRAS CONTADAS:: %d" % len(final))
+        while (i<(len(final)-1)):
+            print(final[i].decode('utf-8'))
+            i = i+1
+        filedata=read(book)
+        write(book2,filedata)        
+        ring(my_id,book2,parts,comm,numnodos)
     else:
         parts = comm.recv(source = 0, tag =11)
         words = countWords(book, parts)
+        print("Nodo %s realizo su CUENTA" % my_id)
         comm.send(words, dest = 0, tag =13) 
-        ring(my_id,book,parts,comm,numnodos)
+        ring(my_id,book2,parts,comm,numnodos)
 #parts = MPI.COMM_WORLD.recv(numnodos-1,tag)
 
 def getChunks(searchFile, numnodos):
@@ -177,7 +177,9 @@ def subWords(bookFile,lista):
     for el in lista:
         filedata=read(bookFile)
         word=el.split(' "')
+        #print("worddddd :: %s" % word)
         definition=word[1].split('"')
+        #print("definition :: %s" % definition)
         for line in fileinput.FileInput( bookFile ):
             newdata = filedata.replace(word[0],definition[0],1)
             write(bookFile,newdata)
@@ -192,10 +194,11 @@ def subWords(bookFile,lista):
    lista: list -  lista de palabras y definiciones que le toca al nodo cambiar en el libro """
 def ring(my_id,bookFile, lista,comm,size):
     #coordinador solo recibe y escribe en el archivo
+#    print(size)
     if (my_id)==0:
         data = comm.recv(source = (size-1), tag =12)
         writeList(bookFile,data)
-        print("coordinador recibio libro")
+        print("** Coordinador recibio libro con modificaciones **")
     #primer nodo solo modifica y envia al siguiente
     elif (my_id)==1:
         subWords(bookFile,lista)
@@ -217,18 +220,20 @@ def ring(my_id,bookFile, lista,comm,size):
         subWords(bookFile,lista)
         filedata=readList(bookFile)
         comm.send(filedata, dest = ((my_id)+1), tag = 12)
-        print("Nodo %s realizo su modificacion" % my_id)
+        print("NODOOOOOOO %s realizo su modificacion" % my_id)
 
 # ################# FIN funciones para cambio de palabras #################
 
 
 
 ############### MAIN CODE ################
-palabras = getWordsOrDefinitions("input.txt",0)
+#palabras = getWordsOrDefinitions("input.txt",0)
 #prueba=getDefinitions("input.txt","software")
-searchFile = 'input.txt'
-book = '/local_home/mnarguelles.14/libro.txt'
-run(searchFile, book)
+searchFile = 'palabras_libro_medicina.txt'
+book = 'libro.txt'
+local_book = '/local_home/mnarguelles.14/libro.txt'
+book2 = 'libro2.txt'
+run(searchFile, local_book, book2)
 #print(chunk[0])
 #subWords("libro.txt",chunk[0])
 #enviar chunk[my_id]
@@ -238,4 +243,3 @@ run(searchFile, book)
 #writeList("prueba.txt",filedata)
 #final = countWords("libro.txt", chunk[0])
 #print("PALABRAS Y REPETICIONES :: %s" % final)
-
